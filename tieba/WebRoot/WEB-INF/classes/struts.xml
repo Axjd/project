@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+	<constant name="struts.devMode" value="true"></constant>
+	<constant name="struts.multipart.saveDir" value="/temp" />  
+	<constant name="struts.multipart.maxSize" value="20971520000000" />
+	<package name="default" extends="struts-default,json-default" namespace="/">
+	<interceptors>
+		<interceptor name="loginInter" class="ems.util.LoginInterceptor"></interceptor>
+		<interceptor name="sayInter" class="ems.util.SayInterceptor"></interceptor>
+		<interceptor-stack name="myStack">
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<interceptor-ref name="loginInter"></interceptor-ref>
+		</interceptor-stack>
+		<interceptor-stack name="myStackSay">
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<interceptor-ref name="loginInter"></interceptor-ref>
+			<interceptor-ref name="sayInter"></interceptor-ref>
+		</interceptor-stack>
+	</interceptors>
+	<global-results>
+		<result name="deny">/tiao.jsp</result>
+	</global-results>
+		<action name="Login" class="ems.action.UserAction" method="login">
+			<result name="success">index.jsp</result>
+			<result name="input">/login.jsp</result>
+		</action>
+			<action name="SecurityCodeImageAction" class="ems.action.ValidCodeAction">
+			<result name="success" type="stream">
+				<param name="contentType">image/jpeg</param>
+				<param name="inputName">imageStream</param>
+				<param name="bufferSize">2048</param>
+			</result>
+		</action>
+		<action name="register" class="ems.action.UserAction" method="register">
+			<result name="success">/login.jsp</result>
+			<result name="input">/register.jsp</result>
+		</action>
+		<action name="logout" class="ems.action.UserAction" method="logout">
+			<result name="success">/login.jsp</result>
+			<result name="input">/login.jsp</result>
+		</action>
+		<action name="updateUser" class="ems.action.UserAction" method="updateUser">
+		<interceptor-ref name="myStack"></interceptor-ref>
+			<result name="success">/updateUser.jsp</result>
+		</action>
+		<action name="updateU" class="ems.action.UserAction" method="updateU">
+		<interceptor-ref name="myStack"></interceptor-ref>
+			<result type="redirectAction">queryPost</result>
+		</action>	
+		<action name="queryPost" class="postAction" method="queryAll">
+			<result name="success">/post.jsp</result>
+		</action>
+		<action name="addPost" class="postAction" method="addPost">
+		<interceptor-ref name="myStackSay"></interceptor-ref>
+			<result type="redirectAction">queryPost</result>		
+		</action>
+		<action name="queryOne" class="postAction" method="queryOne">
+			<result name="success">/showPost.jsp</result>
+		</action>
+		<action name="queryMy" class="postAction" method="queryMy">
+		<interceptor-ref name="myStack"></interceptor-ref>
+			<result name="success">/myPost.jsp</result>
+		</action>
+		<action name="postComment" class="postAction" method="postComment">
+		<interceptor-ref name="myStackSay"></interceptor-ref>
+			<result type="chain">queryOne</result>
+		</action>
+		<action name="deleteOne" class="postAction" method="deleteOne">
+			<result type="redirectAction">queryPost</result>
+		</action>
+		<action name="updateLoad" class="postAction" method="updateLoad">
+			<result name="success">/updatePost.jsp</result>
+		</action>
+		<action name="updatePost" class="postAction" method="updatePost">
+		<interceptor-ref name="myStackSay"></interceptor-ref>
+			<result type="redirectAction">queryPost</result>
+		</action>
+			
+	</package>
+</struts>    
